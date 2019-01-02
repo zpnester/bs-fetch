@@ -1,19 +1,23 @@
 {
-  "name": "bs-fetch",
-  "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
+  "name": "@zpnester/bs-fetch",
   "refmt": 3,
-  "package-specs": [{
-    "module": "commonjs",
-    "in-source": false
-  }],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "bs-dependencies": [
+    "@zpnester/bs-filereader"
+  ],
   "sources": [
     {
-      "dir": "src",
-      "public": "all"
+      "dir": "src"
     },
     {
-      "dir": "examples",
+      "dir": "test",
       "type": "dev"
     }
-  ]
+  ],
+  "suffix": ".bs.js"
 }
