@@ -1,6 +1,6 @@
 {
   "name": "@zpnester/bs-fetch",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "build": "bsb -make-world",
     "watch": "bsb -make-world -w",
@@ -27,10 +27,9 @@
     "url": "https://github.com/zpnester/bs-fetch.git"
   },
   "license": "MIT",
-  "dependencies": {
-    "@zpnester/bs-filereader": "^0.2.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@zpnester/bs-filereader": "^0.2.0",
     "bs-platform": "^4.0.6",
     "concurrently": "^4.1.0",
     "copy-webpack-plugin": "^4.6.0",

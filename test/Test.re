@@ -251,7 +251,7 @@ let xhr = XmlHttpRequest.make();
 expectToEqual(xhr->responseType, `text);
 xhr->open_(`Post, "/", ());
 /* xhr->overrideMimeType("text/json"); */
-xhr->sendDocument(doc);
+xhr->sendDocument(doc); 
 
 let xhr = XmlHttpRequest.make();
 xhr->setResponseType(`arraybuffer);
@@ -296,7 +296,6 @@ xhr->ontimeout(() => {
   Js.log("timeout");
 });
 xhr->onload(_ => {
-  /* failwith("fail"); */
   ()
 });
 xhr->open_(`Get, "http:/aaaaaaaaazzzzzz.com", ());
