@@ -12,12 +12,12 @@ module Make =
   [@bs.send] external delete: (M.t, string) => unit = "delete";
 
   [@bs.send]
-  external entries_: M.t => Fetch_Iterator.t((string, Js.Json.t)) =
+  external entries_: M.t => Js.Array.array_like((string, Js.Json.t)) =
     "entries";
   let entries = self =>
     self
     ->entries_
-    ->Fetch_Iterator.toArray
+    ->Js.Array.from
     ->Belt.Array.map(((name, value)) => (name, value->M.decodeValue));
 
   [@bs.send] [@bs.return nullable]
@@ -29,12 +29,12 @@ module Make =
 
   [@bs.send] external has: (M.t, string) => bool = "has";
 
-  [@bs.send] external keys_: M.t => Fetch_Iterator.t(string) = "keys";
-  let keys = self => self->keys_->Fetch_Iterator.toArray;
+  [@bs.send] external keys_: M.t => Js.Array.array_like(string) = "keys";
+  let keys = self => self->keys_->Js.Array.from;
 
   /* set is unique for FormData */
 
-  [@bs.send] external values_: M.t => Fetch_Iterator.t(Js.Json.t) = "values";
+  [@bs.send] external values_: M.t => Js.Array.array_like(Js.Json.t) = "values";
   let values = self =>
-    self->values_->Fetch_Iterator.toArray->Belt.Array.map(M.decodeValue);
+    self->values_->Js.Array.from->Belt.Array.map(M.decodeValue);
 };

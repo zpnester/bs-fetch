@@ -24,7 +24,6 @@ let readyState: t => ready_state;
 type response = [
   | `ArrayBuffer(Js.Typed_array.ArrayBuffer.t)
   | `Blob(FileReader.Blob.t)
-  | `ArrayBuffer(Js.Typed_array.ArrayBuffer.t)
   | `Document(Dom.document)
   | `Json(Js.Json.t)
   | `String(string)

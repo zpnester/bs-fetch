@@ -4,7 +4,7 @@ Fork of [reasonml-community/bs-fetch](https://github.com/reasonml-community/bs-f
 
 * Blob type [zpnester/bs-filereader](https://github.com/zpnester/bs-filereader)
 * XMLHttpRequest bindings
-* Polymorpic variants instead of variants 
+* Polymorphic variants instead of variants 
 
 ## Install
 

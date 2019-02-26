@@ -15,7 +15,7 @@ external fetchWithRequestInit:
   "fetch";
   
 module BodyInit = Fetch_BodyInit;
-module Body= Fetch_Body;
+module Body = Fetch_Body;
 module FormData = Fetch_FormData;
 module Headers = Fetch_Headers;
 module HeadersInit = Fetch_HeadersInit;

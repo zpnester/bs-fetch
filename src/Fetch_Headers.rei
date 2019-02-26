@@ -1,17 +1,12 @@
 type t;
 
-/* include */
-let delete: (t, string) => unit;
-let entries: t => array((string, string));
 
-let get: (t, string) => option(string);
+include (module type of Fetch_MapLike.Make({
+  type nonrec t = t;
+  type value = string;
+  external decodeValue: Js.Json.t => string = "%identity";
+}));
 
-let has: (t, string) => bool;
-
-let keys: t => array(string);
-
-let values: t => array(string);
-/* end of include */
 
 [@bs.send] external append: (t, string, string) => unit = "append";
 

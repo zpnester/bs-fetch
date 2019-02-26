@@ -1,25 +1,18 @@
 type t;
 
-type entry_value = [ | `String(string) | `Blob(FileReader.Blob.t)];
 
-/* include */
+include (module type of Fetch_MapLike.Make({
+  type nonrec t = t;
+  type value = [ | `String(string) | `Blob(FileReader.Blob.t)];
+  let decodeValue = Fetch__.decodeEntryValue_;
+}));
 
-let delete: (t, string) => unit;
-let entries: t => array((string, entry_value));
 
-let get: (t, string) => option(entry_value);
-
-let has: (t, string) => bool;
-
-let keys: t => array(string);
-
-let values: t => array(entry_value);
-/* end of include */
 
 let append:
   (t, string, [ | `String(string) | `Blob(FileReader.Blob.t)]) => unit;
 
-let getAll: (t, string) => array(entry_value);
+let getAll: (t, string) => array([ | `String(string) | `Blob(FileReader.Blob.t)]);
 
 let set:
   (
