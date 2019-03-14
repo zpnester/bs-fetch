@@ -2,7 +2,6 @@ type t;
 
 /* This is an experimental technology */
 
-
 include Fetch_MapLike.Make({
   external decodeValue: Js.Json.t => string = "%identity";
   type nonrec t = t;

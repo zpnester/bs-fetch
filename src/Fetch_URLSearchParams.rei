@@ -2,22 +2,23 @@ type t;
 
 /* "This is an experimental technology" */
 
-include (module type of Fetch_MapLike.Make({
-  type nonrec t = t;
-  type value = string;
-  external decodeValue: Js.Json.t => string = "%identity";
-}));
+include (module type of
+  Fetch_MapLike.Make({
+    type nonrec t = t;
+    type value = string;
+    external decodeValue: Js.Json.t => string = "%identity";
+  }));
 
+[@bs.send] external append: (t, string, string) => unit = "append";
 
-let append: (t, string, string) => unit;
+[@bs.send] external getAll: (t, string) => array(string) = "getAll";
 
-let getAll: (t, string) => array(string);
+[@bs.send] external set: (t, string, string) => unit = "set";
 
-let set: (t, string, string) => unit;
+[@bs.send] external sort: t => unit = "sort";
+[@bs.send] external toString: t => string = "toString";
 
-let sort: t => unit;
-let toString: t => string;
-
+// constructors, avoid extenral
 let make: unit => t;
 let makeWithString: string => t;
 let makeWithObject: Js.t({..}) => t;

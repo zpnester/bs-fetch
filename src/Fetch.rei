@@ -1,19 +1,15 @@
-[@bs.val] external fetch: string => Js.Promise.t(Fetch_Response.t) = "fetch";
+// globals, avoid external
 
-[@bs.val]
-external fetchWithInit:
-  (string, Fetch_RequestInit.t) => Js.Promise.t(Fetch_Response.t) =
-  "fetch";
+let fetch: string => Js.Promise.t(Fetch_Response.t);
 
-[@bs.val]
-external fetchWithRequest: Fetch_Request.t => Js.Promise.t(Fetch_Response.t) =
-  "fetch";
+let fetchWithInit:
+  (string, Fetch_RequestInit.t) => Js.Promise.t(Fetch_Response.t);
 
-[@bs.val]
-external fetchWithRequestInit:
-  (Fetch_Request.t, Fetch_RequestInit.t) => Js.Promise.t(Fetch_Response.t) =
-  "fetch";
-  
+let fetchWithRequest: Fetch_Request.t => Js.Promise.t(Fetch_Response.t);
+
+let fetchWithRequestInit:
+  (Fetch_Request.t, Fetch_RequestInit.t) => Js.Promise.t(Fetch_Response.t);
+
 module BodyInit = Fetch_BodyInit;
 module Body = Fetch_Body;
 module FormData = Fetch_FormData;

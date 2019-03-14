@@ -1,27 +1,36 @@
 type t;
 
+include (module type of
+  Fetch_MapLike.Make({
+    type nonrec t = t;
+    type value = [ | `String(string) | `Blob(FileReader.Blob.t)];
+    let decodeValue = Fetch__.decodeEntryValue_;
+  }));
 
-include (module type of Fetch_MapLike.Make({
-  type nonrec t = t;
-  type value = [ | `String(string) | `Blob(FileReader.Blob.t)];
-  let decodeValue = Fetch__.decodeEntryValue_;
-}));
-
-
-
-let append:
-  (t, string, [ | `String(string) | `Blob(FileReader.Blob.t)]) => unit;
-
-let getAll: (t, string) => array([ | `String(string) | `Blob(FileReader.Blob.t)]);
-
-let set:
+[@bs.send]
+external append:
   (
     t,
     string,
-    [ | `String(string) | `Blob(FileReader.Blob.t)],
+    [@bs.unwrap] [ | `String(string) | `Blob(FileReader.Blob.t)]
+  ) =>
+  unit =
+  "append";
+
+let getAll:
+  (t, string) => array([ | `String(string) | `Blob(FileReader.Blob.t)]);
+
+[@bs.send]
+external set:
+  (
+    t,
+    string,
+    [@bs.unwrap] [ | `String(string) | `Blob(FileReader.Blob.t)],
     ~filename: string=?,
     unit
   ) =>
-  unit;
+  unit =
+  "set";
 
+// constructor, avoid externals
 let make: (~form: Dom.htmlFormElement=?, unit) => t;

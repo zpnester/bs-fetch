@@ -24,6 +24,7 @@ type ready_state = [
 ];
 
 [@bs.get] external readyState_: t => int = "readyState";
+
 let readyState = (self): ready_state => {
   switch (readyState_(self)) {
   | 0 => `UNSENT
@@ -77,25 +78,25 @@ external asBlob__: Js.Json.t => FileReader.Blob.t = "%identity";
 [@bs.get] [@bs.return nullable]
 external response_: t => option(Js.Json.t) = "response";
 
-
-let response: t => option(response) = xhr => {
-  switch (xhr->response_) {
-  | Some(res) =>
-    if (res->isDocument_) {
-      Some(`Document(res->asDocument__));
-    } else if (res->isBlob_) {
-      Some(`Blob(res->asBlob__));
-    } else if (res->isArrayBuffer_) {
-      Some(`ArrayBuffer(res->asArrayBuffer__));
-    } else {
-      switch (res->Js.Json.decodeString) {
-      | Some(string) => Some(`String(string))
-      | None => Some(`Json(res))
+let response: t => option(response) =
+  xhr => {
+    switch (xhr->response_) {
+    | Some(res) =>
+      if (res->isDocument_) {
+        Some(`Document(res->asDocument__));
+      } else if (res->isBlob_) {
+        Some(`Blob(res->asBlob__));
+      } else if (res->isArrayBuffer_) {
+        Some(`ArrayBuffer(res->asArrayBuffer__));
+      } else {
+        switch (res->Js.Json.decodeString) {
+        | Some(string) => Some(`String(string))
+        | None => Some(`Json(res))
+        };
       }
-    }
-  | None => None
+    | None => None
+    };
   };
-};
 
 [@bs.get] [@bs.return nullable]
 external responseText: t => option(string) = "responseText";

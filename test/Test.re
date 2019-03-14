@@ -4,6 +4,8 @@ open Expect;
 open FileReader;
 open Belt;
 
+module FormData = Fetch_FormData;
+
 let fd = FormData.make();
 expectToEqual(fd->FormData.entries, [||]);
 expectToEqual(fd->FormData.getAll("name1"), [||]);
@@ -65,6 +67,8 @@ expectToEqual(fd->FormData.keys, [|"name1"|]);
 expectToEqual(fd->FormData.has("name1"), true);
 expectToEqual(fd->FormData.has("name5"), false);
 
+module URLSearchParams = Fetch.URLSearchParams;
+
 let usp =
   URLSearchParams.makeWithArray([|
     ("1", "first"),
@@ -79,6 +83,8 @@ expectToEqual(usp->URLSearchParams.toString, "1=first&1=uno&2=second");
 expectToEqual(usp->URLSearchParams.keys, [|"1", "1", "2"|]);
 expectToEqual(usp->URLSearchParams.get("1"), Some("first"));
 expectToEqual(usp->URLSearchParams.get("5"), None);
+
+module Headers = Fetch.Headers;
 
 let headers = Headers.makeWithObject({"h1": "v1", "h2": "v2", "h3": "v3"});
 headers->Headers.append("h1", "v11");
@@ -98,6 +104,8 @@ for (_ in 1 to 100) {
 let blob1 = Blob.make(parts, ());
 
 open XmlHttpRequest;
+
+
 let xhr = XmlHttpRequest.make();
 xhr->setResponseType(`text);
 xhr->onprogress(e => {
@@ -332,6 +340,10 @@ let body = BodyInit.makeWithBlob(file->File.asBlob);
 let headers = HeadersInit.makeWithObject({
   "1": "2"
 });
+
+// name clash test
+let fetch = 1;
+
 fetchWithInit("/?fetch-send-file", RequestInit.make(~method_=`Post, ~body, ~headers, ()));
 
 fetchWithRequest(Request.make("/?fetch-req"))

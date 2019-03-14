@@ -16,7 +16,9 @@ include (module type of Fetch_MapLike.Make({
 
 /* removed indirecton to HeadersInit, it is still used in RequestInit */
 
-[@bs.new] external make: unit => t = "Headers";
-[@bs.new] external makeWithObject: Js.t({..}) => t = "Headers";
-[@bs.new] external makeWithDict: Js.Dict.t(string) => t = "Headers";
-[@bs.new] external makeWithArray: array((string, string)) => t = "Headers";
+// constructors, avoid externals
+
+let make: unit => t;
+let makeWithObject: Js.t({..}) => t ;
+let makeWithDict: Js.Dict.t(string) => t;
+let makeWithArray: array((string, string)) => t;

@@ -1,63 +1,68 @@
 type t;
 
-let loaded: Dom.progressEvent => float;
-let total: Dom.progressEvent => float;
+[@bs.get] external loaded: Dom.progressEvent => float = "loaded";
+[@bs.get] external total: Dom.progressEvent => float = "total";
 
-let onprogress: (t, Dom.progressEvent => unit) => unit;
-let onloadstart: (t, unit => unit) => unit;
-let onload: (t, Dom.progressEvent => unit) => unit;
-let onerror: (t, unit => unit) => unit;
-let onabort: (t, unit => unit) => unit;
+[@bs.set]
+external onprogress: (t, Dom.progressEvent => unit) => unit = "onprogress";
+[@bs.set] external onloadstart: (t, unit => unit) => unit = "onloadstart";
+[@bs.set] external onload: (t, Dom.progressEvent => unit) => unit = "onload";
+[@bs.set] external onerror: (t, unit => unit) => unit = "onerror";
+[@bs.set] external onabort: (t, unit => unit) => unit = "onabort";
 
-let onreadystatechange: (t, unit => unit) => unit;
+[@bs.set]
+external onreadystatechange: (t, unit => unit) => unit = "onreadystatechange";
 
-type ready_state = [
-  | `UNSENT
-  | `OPENED
-  | `HEADERS_RECEIVED
-  | `LOADING
-  | `DONE
-];
+let readyState:
+  t => [ | `UNSENT | `OPENED | `HEADERS_RECEIVED | `LOADING | `DONE];
 
-let readyState: t => ready_state;
+let response:
+  t =>
+  option(
+    [
+      | `ArrayBuffer(Js.Typed_array.ArrayBuffer.t)
+      | `Blob(FileReader.Blob.t)
+      | `Document(Dom.document)
+      | `Json(Js.Json.t)
+      | `String(string)
+    ],
+  );
 
-type response = [
-  | `ArrayBuffer(Js.Typed_array.ArrayBuffer.t)
-  | `Blob(FileReader.Blob.t)
-  | `Document(Dom.document)
-  | `Json(Js.Json.t)
-  | `String(string)
-];
+[@bs.get] [@bs.return nullable]
+external responseText: t => option(string) = "responseText";
 
-let response: t => option(response);
+let responseType: t => [ | `text | `arraybuffer | `blob | `document | `json];
+let setResponseType:
+  (t, [ | `text | `arraybuffer | `blob | `document | `json]) => unit;
 
-let responseText: t => option(string);
+[@bs.get] external responseURL: t => string = "responseURL";
 
-type response_type = [ | `text | `arraybuffer | `blob | `document | `json];
+[@bs.get] [@bs.return nullable]
+external responseXML: t => option(Dom.document) = "responseXML";
 
-let responseType: t => response_type;
-let setResponseType: (t, response_type) => unit;
+[@bs.get] external status: t => int = "status";
 
-let responseURL: t => string;
+[@bs.get] external statusText: t => string = "statusText";
 
-let responseXML: t => option(Dom.document);
+[@bs.get] external timeout: t => float = "timeout";
 
-let status: t => int;
-let statusText: t => string;
-let timeout: t => float;
-let setTimeout: (t, float) => unit;
+[@bs.set] external setTimeout: (t, float) => unit = "timeout";
 
-let ontimeout: (t, unit => unit) => unit;
+[@bs.set] external ontimeout: (t, unit => unit) => unit = "ontimeout";
 
 /* upload */
 
-let withCredentials: t => bool;
-let setWithCredentials: (t, bool) => unit;
+[@bs.get] external withCredentials: t => bool = "withCredentials";
+[@bs.set] external setWithCredentials: (t, bool) => unit = "withCredentials";
 
-let abort: t => unit;
-let getAllResponseHeaders: t => option(string);
+[@bs.send] external abort: t => unit = "abort";
 
-let getResponseHeader: (t, string) => option(string);
+[@bs.send] [@bs.return nullable]
+external getAllResponseHeaders: t => option(string) = "getAllResponseHeaders";
+
+[@bs.send] [@bs.return nullable]
+external getResponseHeader: (t, string) => option(string) =
+  "getResponseHeader";
 
 let open_:
   (
@@ -71,11 +76,13 @@ let open_:
   ) =>
   unit;
 
-let overrideMimeType: (t, string) => unit;
+[@bs.send] external overrideMimeType: (t, string) => unit = "overrideMimeType";
 
-let sendDocument: (t, Dom.document) => unit;
-let sendBody: (t, Fetch_BodyInit.t) => unit;
-let send: t => unit;
-let setRequestHeader: (t, string, string) => unit;
+[@bs.send] external sendDocument: (t, Dom.document) => unit = "send";
+[@bs.send] external sendBody: (t, Fetch_BodyInit.t) => unit = "send";
+[@bs.send] external send: t => unit = "send";
+[@bs.send]
+external setRequestHeader: (t, string, string) => unit = "setRequestHeader";
 
+// constructor, avoid external
 let make: unit => t;

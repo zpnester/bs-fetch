@@ -1,9 +1,8 @@
 type t;
 
-
 include Fetch_MapLike.Make({
   type nonrec t = t;
-  type value =  [ | `String(string) | `Blob(FileReader.Blob.t)];
+  type value = [ | `String(string) | `Blob(FileReader.Blob.t)];
   let decodeValue = Fetch__.decodeEntryValue_;
 });
 
