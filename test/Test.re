@@ -351,4 +351,14 @@ fetchWithRequest(Request.make("/?fetch-req"))
 let res = Response.make(~body=BodyInit.make("qwerty"), ~init=ResponseInit.make(~status=322, ()), ());
 expectToEqual(res->Response.status, 322);
 
+let r1 = Response.redirect("/");
+expectToEqual(r1->Response.url, "");
+
+Fetch.fetch("1.txt")
+|> then_(Response.text)
+|> then_(text => {
+  expectToEqual(text, "hello world");
+  resolve();
+})
+
 Js.log("OK");

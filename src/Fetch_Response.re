@@ -4,9 +4,9 @@ include Fetch_BodyLike.Make({
   type nonrec t = t;
 });
 
-[@bs.val] external error: unit => t = "error";
-[@bs.val] external redirect: string => t = "redirect";
-[@bs.val]
+[@bs.val] [@bs.scope "Response"] external error: unit => t = "error";
+[@bs.val] [@bs.scope "Response"] external redirect: string => t = "redirect";
+[@bs.val] [@bs.scope "Response"]
 external redirectWithStatus: (string, int /* enum-ish */) => t = "redirect";
 
 [@bs.get] external headers: t => Fetch_Headers.t = "headers";

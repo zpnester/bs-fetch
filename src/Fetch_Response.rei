@@ -5,12 +5,11 @@ include (module type of
     type nonrec t = t;
   }));
 
-[@bs.val] external error: unit => t = "error";
+let error: unit => t;
 
-[@bs.val] external redirect: string => t = "redirect";
+let redirect: string => t;
 
-[@bs.val]
-external redirectWithStatus: (string, int /* enum-ish */) => t = "redirect";
+let redirectWithStatus: (string, int /* enum-ish */) => t;
 
 [@bs.get] external headers: t => Fetch_Headers.t = "headers";
 
