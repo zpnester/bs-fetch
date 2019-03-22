@@ -13,6 +13,10 @@ include Fetch_MapLike.Make({
 
 [@bs.send] external set: (t, string, string) => unit = "set";
 
+[@bs.send] [@bs.return nullable]
+external get: (t, string) => option(string) = "get";
+
+
 [@bs.send] external forEach: (t, string => unit) => unit = "forEach";
 
 /* removed indirecton to HeadersInit, it is still used in RequestInit */

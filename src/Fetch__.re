@@ -49,7 +49,8 @@ function(value) {
 
 
 let decodeEntryValue_: Js.Json.t =>  [ | `String(string) | `Blob(FileReader.Blob.t)] =
-  json =>
+  json => {
+    // [%debugger]
     if (json->isBlob_) {
       `Blob(json->asBlob_);
     } else {
@@ -58,3 +59,4 @@ let decodeEntryValue_: Js.Json.t =>  [ | `String(string) | `Blob(FileReader.Blob
       | None => failwith("unexpected entry value")
       };
     };
+  }

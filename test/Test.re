@@ -6,14 +6,24 @@ open Belt;
 
 module FormData = Fetch_FormData;
 
+let isEdge: bool = [%raw {|
+(navigator.appVersion.indexOf("Edge") != -1)
+|}];
+
+// FORM DATA
 let fd = FormData.make();
 expectToEqual(fd->FormData.entries, [||]);
-expectToEqual(fd->FormData.getAll("name1"), [||]);
+if (!isEdge) {
+  expectToEqual(fd->FormData.getAll("name1"), [||]);
+};
+expectToEqual(fd->FormData.get("name1"), None);
 expectToEqual(fd->FormData.keys, [||]);
 
 let blob1 = Blob.make([|`String("value11")|], ());
 
 fd->FormData.append("name1", `String("value1"));
+expectToEqual(fd->FormData.get("name1"), Some(`String("value1")));
+
 fd->FormData.append("name2", `String("value2"));
 fd->FormData.append("name1", `Blob(blob1));
 
@@ -31,19 +41,9 @@ switch (fd->FormData.entries->Belt_Array.getExn(2)) {
 | _ => failwith("fail")
 };
 
-let blobAsFile: Blob.t => option(File.t) = [%raw
-  {|
-function(blob) {
-  if (blob instanceof File) {
-    return blob;
-  } else {
-    return null;
-  }
-}
-|}
-];
-
-expectToEqual(fd->FormData.getAll("name1")->Array.length, 2);
+if (!isEdge) {
+  expectToEqual(fd->FormData.getAll("name1")->Array.length, 2);
+};
 
 fd->FormData.set(
   "name1",
@@ -51,23 +51,31 @@ fd->FormData.set(
   ~filename="newfile",
   (),
 );
-expectToEqual(fd->FormData.getAll("name1")->Array.length, 1);
+
+if (!isEdge) {
+  expectToEqual(fd->FormData.getAll("name1")->Array.length, 1);
+};
 
 switch (fd->FormData.get("name1")) {
-| Some(`Blob(blob)) =>
-  expectToEqual(blob->blobAsFile->Option.getExn->File.name, "newfile")
+| Some(`Blob(_)) => ()
 | _ => failwith("fail")
 };
 
 expectToEqual(fd->FormData.get("name2"), Some(`String("value2")));
 fd->FormData.delete("name2");
 expectToEqual(fd->FormData.get("name2"), None);
-expectToEqual(fd->FormData.keys, [|"name1"|]);
+
+// edge returns 2 name1
+if (!isEdge) {
+  expectToEqual(fd->FormData.keys, [|"name1"|]);
+};
 
 expectToEqual(fd->FormData.has("name1"), true);
 expectToEqual(fd->FormData.has("name5"), false);
 
 module URLSearchParams = Fetch.URLSearchParams;
+
+// URL SEARCH PARAMS
 
 let usp =
   URLSearchParams.makeWithArray([|
@@ -75,6 +83,12 @@ let usp =
     ("2", "second"),
     ("1", "uno"),
   |]);
+
+expectToEqual(
+  usp->URLSearchParams.entries,
+  [|("1", "first"), ("2", "second"), ("1", "uno")|],
+);
+
 expectToEqual(usp->URLSearchParams.values, [|"first", "second", "uno"|]);
 usp->URLSearchParams.sort;
 expectToEqual(usp->URLSearchParams.values, [|"first", "uno", "second"|]);
@@ -84,18 +98,55 @@ expectToEqual(usp->URLSearchParams.keys, [|"1", "1", "2"|]);
 expectToEqual(usp->URLSearchParams.get("1"), Some("first"));
 expectToEqual(usp->URLSearchParams.get("5"), None);
 
+expectToEqual(usp->URLSearchParams.has("1"), true);
+expectToEqual(usp->URLSearchParams.has("5"), false);
+
+usp->URLSearchParams.delete("1");
+expectToEqual(usp->URLSearchParams.get("1"), None);
+
+expectToEqual(usp->URLSearchParams.entries, [|("2", "second")|]);
+
+usp->URLSearchParams.append("2", "22");
+expectToEqual(
+  usp->URLSearchParams.entries,
+  [|("2", "second"), ("2", "22")|],
+);
+expectToEqual(usp->URLSearchParams.getAll("2"), [|"second", "22"|]);
+expectToEqual(usp->URLSearchParams.getAll("3"), [||]);
+
+usp->URLSearchParams.set("2", "Second");
+expectToEqual(usp->URLSearchParams.getAll("2"), [|"Second"|]);
+
+// HEADERS
+
 module Headers = Fetch.Headers;
 
 let headers = Headers.makeWithObject({"h1": "v1", "h2": "v2", "h3": "v3"});
 headers->Headers.append("h1", "v11");
 
 expectToEqual(headers->Headers.values, [|"v1, v11", "v2", "v3"|]);
+expectToEqual(headers->Headers.keys, [|"h1", "h2", "h3"|]);
 expectToEqual(headers->Headers.get("h1"), Some("v1, v11"));
 expectToEqual(headers->Headers.get("h5"), None);
+
+expectToEqual(headers->Headers.has("h1"), true);
+expectToEqual(headers->Headers.has("h5"), false);
 
 headers->Headers.set("h1", "v111");
 headers->Headers.delete("h2");
 expectToEqual(headers->Headers.entries, [|("h1", "v111"), ("h3", "v3")|]);
+headers->Headers.append("h2", "v2");
+expectToEqual(
+  headers->Headers.entries,
+  [|("h1", "v111"), ("h2", "v2"), ("h3", "v3")|],
+);
+
+headers->Headers.delete("h1");
+headers->Headers.delete("h3");
+
+headers->Headers.forEach(x => expectToEqual(x, "v2"));
+
+// XML HTTP REQUEST
 
 let parts = [||];
 for (_ in 1 to 100) {
@@ -104,7 +155,6 @@ for (_ in 1 to 100) {
 let blob1 = Blob.make(parts, ());
 
 open XmlHttpRequest;
-
 
 let xhr = XmlHttpRequest.make();
 xhr->setResponseType(`text);
@@ -120,12 +170,10 @@ xhr->onload(e => {
   expectToEqual(e->loaded->Js.typeof, "number");
   expectToEqual(e->total->Js.typeof, "number");
 
-  
   expectToEqual(xhr->responseText, Some("hello world"));
 
   switch (xhr->response) {
-  | Some(`String(str)) =>
-    expectToEqual(str, "hello world")
+  | Some(`String(str)) => expectToEqual(str, "hello world")
   | _ => failwith("fail")
   };
 });
@@ -259,7 +307,7 @@ let xhr = XmlHttpRequest.make();
 expectToEqual(xhr->responseType, `text);
 xhr->open_(`Post, "/", ());
 /* xhr->overrideMimeType("text/json"); */
-xhr->sendDocument(doc); 
+xhr->sendDocument(doc);
 
 let xhr = XmlHttpRequest.make();
 xhr->setResponseType(`arraybuffer);
@@ -272,10 +320,13 @@ xhr->onload(_ => {
   | _ => failwith("fail")
   };
 
-  
   expectToEqual(xhr->getResponseHeader("content-length"), Some("4"));
   Js.log(xhr->getAllResponseHeaders);
-  expectToEqual(xhr->getAllResponseHeaders->Option.getExn->Js.String.toLowerCase |> Js.String.includes("content-type"), true);
+  expectToEqual(
+    xhr->getAllResponseHeaders->Option.getExn->Js.String.toLowerCase
+    |> Js.String.includes("content-type"),
+    true,
+  );
 });
 xhr->open_(`Post, "/a.txt", ());
 xhr->sendBody(BodyInit.make(""));
@@ -297,58 +348,59 @@ xhr->onload(_ => {
 xhr->open_(`Get, "/1.xml", ());
 xhr->send;
 
-
 let xhr = XmlHttpRequest.make();
 xhr->setTimeout(1.0);
-xhr->ontimeout(() => {
-  Js.log("timeout");
-});
-xhr->onload(_ => {
-  ()
-});
+xhr->ontimeout(() => Js.log("timeout"));
+xhr->onload(_ => ());
 xhr->open_(`Get, "http:/aaaaaaaaazzzzzz.com", ());
 xhr->send;
 
-
-
 let xhr = XmlHttpRequest.make();
-xhr->open_(`Get, "/?withuserpass", ~async=false, ~user="john", ~password="123", ());
+xhr->open_(
+  `Get,
+  "/?withuserpass",
+  ~async=false,
+  ~user="john",
+  ~password="123",
+  (),
+);
 xhr->send;
 
-
-let usp = URLSearchParams.makeWithObject({
-  "q": "werty", 
-  "a": "sdfg"
-});
+let usp = URLSearchParams.makeWithObject({"q": "werty", "a": "sdfg"});
 
 let xhr = XmlHttpRequest.make();
 xhr->open_(`Post, "/?usp", ());
 xhr->sendBody(BodyInit.makeWithUrlSearchParams(usp));
 
-
 let fd = FormData.make();
 fd->FormData.append("1", `String("one"));
-fd->FormData.append("2", `Blob(Blob.make([| `String("one") |], ())));
+fd->FormData.append("2", `Blob(Blob.make([|`String("one")|], ())));
 
 let xhr = XmlHttpRequest.make();
 xhr->open_(`Post, "/?fd", ());
 xhr->setRequestHeader("myheader", "sss");
 xhr->sendBody(BodyInit.makeWithFormData(fd));
 
-let file = File.make([|`String("content")|], "file1", ());
-let body = BodyInit.makeWithBlob(file->File.asBlob);
-let headers = HeadersInit.makeWithObject({
-  "1": "2"
-});
+let file = Blob.make([|`String("content")|], ());
+let body = BodyInit.makeWithBlob(file);
+let headers = HeadersInit.makeWithObject({"1": "2"});
 
 // name clash test
 let fetch = 1;
 
-fetchWithInit("/?fetch-send-file", RequestInit.make(~method_=`Post, ~body, ~headers, ()));
+fetchWithInit(
+  "/?fetch-send-file",
+  RequestInit.make(~method_=`Post, ~body, ~headers, ()),
+);
 
-fetchWithRequest(Request.make("/?fetch-req"))
+fetchWithRequest(Request.make("/?fetch-req"));
 
-let res = Response.make(~body=BodyInit.make("qwerty"), ~init=ResponseInit.make(~status=322, ()), ());
+let res =
+  Response.make(
+    ~body=BodyInit.make("qwerty"),
+    ~init=ResponseInit.make(~status=322, ()),
+    (),
+  );
 expectToEqual(res->Response.status, 322);
 
 let r1 = Response.redirect("/");
@@ -357,8 +409,11 @@ expectToEqual(r1->Response.url, "");
 Fetch.fetch("1.txt")
 |> then_(Response.text)
 |> then_(text => {
-  expectToEqual(text, "hello world");
-  resolve();
-})
+     expectToEqual(text, "hello world");
+     resolve();
+   });
 
 Js.log("OK");
+[%raw {|
+(alert("OK"))
+|}];

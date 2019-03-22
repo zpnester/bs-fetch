@@ -17,6 +17,7 @@ external append:
   unit =
   "append";
 
+// does not work correctly in edge
 let getAll:
   (t, string) => array([ | `String(string) | `Blob(FileReader.Blob.t)]);
 

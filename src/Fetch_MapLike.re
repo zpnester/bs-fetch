@@ -14,11 +14,12 @@ module Make =
   [@bs.send]
   external entries_: M.t => Js.Array.array_like((string, Js.Json.t)) =
     "entries";
-  let entries = self =>
-    self
-    ->entries_
-    ->Js.Array.from
-    ->Belt.Array.map(((name, value)) => (name, value->M.decodeValue));
+  let entries: M.t => array((string, M.value)) =
+    self =>
+      self
+      ->entries_
+      ->Js.Array.from
+      ->Belt.Array.map(((name, value)) => (name, value->M.decodeValue));
 
   [@bs.send] [@bs.return nullable]
   external get_: (M.t, string) => option(Js.Json.t) = "get";
@@ -34,7 +35,8 @@ module Make =
 
   /* set is unique for FormData */
 
-  [@bs.send] external values_: M.t => Js.Array.array_like(Js.Json.t) = "values";
+  [@bs.send]
+  external values_: M.t => Js.Array.array_like(Js.Json.t) = "values";
   let values = self =>
     self->values_->Js.Array.from->Belt.Array.map(M.decodeValue);
 };
