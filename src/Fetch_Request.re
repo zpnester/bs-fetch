@@ -47,7 +47,7 @@ external makeWithRequestInit: (t, Fetch_RequestInit.t) => t = "Request";
 [@bs.get] external method_: t => string = "method";
 
 let method: t => Fetch_RequestMethod.t =
-  self => Fetch_RequestMethod.decode(method(self));
+  self => Fetch_RequestMethod.decode(method_(self));
 
 [@bs.get] external url: t => string = "url";
 
