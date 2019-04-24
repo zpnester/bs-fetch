@@ -22,3 +22,5 @@ module Response = Fetch_Response;
 module ResponseInit = Fetch_ResponseInit;
 module Request = Fetch_Request;
 module RequestInit = Fetch_RequestInit;
+module AbortController = Fetch_AbortController;
+module AbortSignal = Fetch_AbortSignal;

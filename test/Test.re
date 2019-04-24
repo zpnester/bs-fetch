@@ -413,7 +413,23 @@ Fetch.fetch("1.txt")
      resolve();
    });
 
+let ac = Fetch.AbortController.make();
+let signal = ac->Fetch.AbortController.signal;
+signal->Fetch.AbortSignal.setOnAbort(() => {
+  Js.log("ABORT EVENT");
+});
+let init = Fetch.RequestInit.make(~signal, ());
+
+Fetch.fetchWithInit("abort.txt", init)
+|> then_(Response.text)
+|> then_(text => {
+  Js.log2("abort.txt", text);
+  resolve();
+});
+
+ac->Fetch.AbortController.abort;
+
 Js.log("OK");
-[%raw {|
-(alert("OK"))
-|}];
+// [%raw {|
+// (alert("OK"))
+// |}];

@@ -19,6 +19,7 @@ external make_:
     ~redirect: string=?,
     ~integrity: string=?,
     ~keepalive: bool=?,
+    ~signal: Fetch_AbortSignal.t=?,
     unit
   ) =>
   t =
@@ -36,7 +37,8 @@ let make =
       ~cache: option(Fetch_RequestCache.t)=?,
       ~redirect: option(Fetch_RequestRedirect.t)=?,
       ~integrity: string="",
-      ~keepalive: option(bool)=?
+      ~keepalive: option(bool)=?,
+      ~signal=?,
     ) =>
   make_(
     ~_method=?map(Fetch_RequestMethod.encode, method_),
@@ -50,4 +52,5 @@ let make =
     ~redirect=?map(Fetch_RequestRedirect.encode, redirect),
     ~integrity,
     ~keepalive?,
+    ~signal?
   );

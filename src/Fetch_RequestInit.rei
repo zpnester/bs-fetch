@@ -14,5 +14,6 @@ let make: (
       ~redirect: Fetch_RequestRedirect.t=?,
       ~integrity: string=?,
       ~keepalive: bool=?,
+      ~signal: Fetch_AbortSignal.t=?,
       unit
     ) => t;
