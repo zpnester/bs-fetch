@@ -420,6 +420,8 @@ signal->Fetch.AbortSignal.setOnAbort(() => {
 });
 let init = Fetch.RequestInit.make(~signal, ());
 
+expectToEqual(signal->Fetch.AbortSignal.aborted, false);
+
 Fetch.fetchWithInit("abort.txt", init)
 |> then_(Response.text)
 |> then_(text => {
@@ -428,6 +430,7 @@ Fetch.fetchWithInit("abort.txt", init)
 });
 
 ac->Fetch.AbortController.abort;
+expectToEqual(signal->Fetch.AbortSignal.aborted, true);
 
 Js.log("OK");
 // [%raw {|
