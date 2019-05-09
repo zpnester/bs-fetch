@@ -19,7 +19,7 @@ if (!isEdge) {
 expectToEqual(fd->FormData.get("name1"), None);
 expectToEqual(fd->FormData.keys, [||]);
 
-let blob1 = Blob.make([|`String("value11")|], ());
+let blob1 = Blob.make([|BlobPart.string("value11")|]);
 
 fd->FormData.append("name1", `String("value1"));
 expectToEqual(fd->FormData.get("name1"), Some(`String("value1")));
@@ -45,12 +45,7 @@ if (!isEdge) {
   expectToEqual(fd->FormData.getAll("name1")->Array.length, 2);
 };
 
-fd->FormData.set(
-  "name1",
-  `Blob(Blob.make([||], ())),
-  ~filename="newfile",
-  (),
-);
+fd->FormData.set("name1", `Blob(Blob.make([||])), ~filename="newfile", ());
 
 if (!isEdge) {
   expectToEqual(fd->FormData.getAll("name1")->Array.length, 1);
@@ -150,9 +145,9 @@ headers->Headers.forEach(x => expectToEqual(x, "v2"));
 
 let parts = [||];
 for (_ in 1 to 100) {
-  parts |> Js.Array.push(`String("hello ")) |> ignore;
+  parts |> Js.Array.push(BlobPart.string("hello ")) |> ignore;
 };
-let blob1 = Blob.make(parts, ());
+let blob1 = Blob.make(parts);
 
 open XmlHttpRequest;
 
@@ -374,14 +369,14 @@ xhr->sendBody(BodyInit.makeWithUrlSearchParams(usp));
 
 let fd = FormData.make();
 fd->FormData.append("1", `String("one"));
-fd->FormData.append("2", `Blob(Blob.make([|`String("one")|], ())));
+fd->FormData.append("2", `Blob(Blob.make([|BlobPart.string("one")|])));
 
 let xhr = XmlHttpRequest.make();
 xhr->open_(`Post, "/?fd", ());
 xhr->setRequestHeader("myheader", "sss");
 xhr->sendBody(BodyInit.makeWithFormData(fd));
 
-let file = Blob.make([|`String("content")|], ());
+let file = Blob.make([|BlobPart.string("content")|]);
 let body = BodyInit.makeWithBlob(file);
 let headers = HeadersInit.makeWithObject({"1": "2"});
 
@@ -415,9 +410,7 @@ Fetch.fetch("1.txt")
 
 let ac = Fetch.AbortController.make();
 let signal = ac->Fetch.AbortController.signal;
-signal->Fetch.AbortSignal.setOnAbort(() => {
-  Js.log("ABORT EVENT");
-});
+signal->Fetch.AbortSignal.setOnAbort(() => Js.log("ABORT EVENT"));
 let init = Fetch.RequestInit.make(~signal, ());
 
 expectToEqual(signal->Fetch.AbortSignal.aborted, false);
@@ -425,14 +418,15 @@ expectToEqual(signal->Fetch.AbortSignal.aborted, false);
 Fetch.fetchWithInit("abort.txt", init)
 |> then_(Response.text)
 |> then_(text => {
-  Js.log2("abort.txt", text);
-  resolve();
-});
+     Js.log2("abort.txt", text);
+     resolve();
+   })
+|> catch(e => {
+     Js.log(e);
+     resolve();
+   });
 
 ac->Fetch.AbortController.abort;
 expectToEqual(signal->Fetch.AbortSignal.aborted, true);
 
-Js.log("OK");
-// [%raw {|
-// (alert("OK"))
-// |}];
+Js.log("OK") /* |}]*/ /* [%raw {*/ /* (alert("OK")*/;

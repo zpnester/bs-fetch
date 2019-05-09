@@ -1,13 +1,13 @@
 {
   "name": "@zpnester/bs-fetch",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "scripts": {
     "build": "bsb -make-world",
     "watch": "bsb -make-world -w",
     "clean": "bsb -clean-world",
     "webpack": "webpack -w",
     "serve": "serve -u -p 8083 test_dist",
-    "start": "concurrently --raw npm:watch npm:webpack npm:serve"
+    "dev": "concurrently --raw npm:watch npm:webpack npm:serve"
   },
   "keywords": [
     "BuckleScript",
@@ -29,8 +29,8 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@zpnester/bs-filereader": "^0.2.5",
-    "bs-platform": "^5.0.3",
+    "@zpnester/bs-filereader": "^0.3.0",
+    "bs-platform": "^5.0.4",
     "concurrently": "^4.1.0",
     "copy-webpack-plugin": "^4.6.0",
     "expect": "^23.6.0",

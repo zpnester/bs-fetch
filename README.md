@@ -9,7 +9,7 @@ Fork of [reasonml-community/bs-fetch](https://github.com/reasonml-community/bs-f
 ## Install
 
 ```
-npm i @zpnester/bs-filereader
+npm i @zpnester/bs-filereader@^0.3.0
 npm i @zpnester/bs-fetch
 ```
 

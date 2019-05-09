@@ -8,3 +8,4 @@ node_modules/
 *.bs.js
 node_modules
 /test_dist
+.idea
